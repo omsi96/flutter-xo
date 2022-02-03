@@ -21,7 +21,7 @@ class _XO_GameState extends State<XO_Game> {
   // int _counter = 0;
   String gameLabel = "X turn";
   bool gameOver = false;
-  int _computerDelay = 700;
+  final _computerDelay = 700;
   String _currentPlayer = "X";
   // ignore: prefer_final_fields
   var _grid = [
