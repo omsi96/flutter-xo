@@ -1,5 +1,5 @@
-class WinningSituation {
-  static final array = [
+class XO_Utils {
+  static final winningSituations = [
     [
       [0, 0],
       [0, 1],
@@ -41,4 +41,7 @@ class WinningSituation {
       [2, 0]
     ],
   ];
+
+  static int flatten2DIndexes(int r, int c) => (r * 3) + c;
+  static List<int> unflatten2DIndexes(int index) => [index ~/ 3, index % 3];
 }

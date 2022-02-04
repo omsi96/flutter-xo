@@ -3,9 +3,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:x_o_game/pages/home.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:x_o_game/pages/rooms.dart';
+import 'package:x_o_game/pages/signin.dart';
+import 'package:x_o_game/pages/signup.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Home(),
+      home: SignIn(),
     );
   }
 }

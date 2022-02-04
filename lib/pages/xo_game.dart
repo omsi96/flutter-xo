@@ -1,17 +1,33 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:x_o_game/utils/winning_situations.dart';
+import "package:x_o_game/apis/firebase.game.dart" as game;
 
 class GameMode {
   static String onePlayer = "One Player";
   static String twoPlayers = "Two Players";
+  static String networkPlayers = "Network Players";
 }
 
 class XO_Game extends StatefulWidget {
-  XO_Game({Key? key, required this.mode}) : super(key: key);
+  XO_Game({Key? key, required this.mode, this.roomId}) : super(key: key);
   String mode;
+  String? roomId;
+
+  void prepareNetowrkPlayers() {
+    // if (mode == GameMode.networkPlayers) {
+    //   if (roomId != null) {
+    //     var stream = game.listenRoom(roomId!);
+    //     stream.
+    //   } else {
+    //     print("Too shame, no document id?");
+    //   }
+    // }
+  }
 
   @override
   State<XO_Game> createState() => _XO_GameState();
@@ -105,7 +121,7 @@ class _XO_GameState extends State<XO_Game> {
   }
 
   String checkWinner(String player) {
-    for (var winningArray in WinningSituation.array) {
+    for (var winningArray in XO_Utils.winningSituations) {
       if (winningArray
               .map((indexes) => _grid[indexes[0]][indexes[1]])
               .join("") ==
@@ -184,5 +200,14 @@ class _XO_GameState extends State<XO_Game> {
         ),
       ),
     );
+  }
+
+  @override
+  void deactivate() {
+    // super.deactivate();
+    print("%%%%% WE'RE inside XO game. Trying to remove ${widget.roomId}");
+    final roomId = widget.roomId;
+    if (roomId == null) return;
+    game.terminateRoom(roomId);
   }
 }
