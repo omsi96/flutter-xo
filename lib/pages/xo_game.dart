@@ -4,7 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:x_o_game/utils/winning_situations.dart';
+import 'package:x_o_game/utils/xo_utils.dart';
 import "package:x_o_game/apis/firebase.game.dart" as game;
 
 class GameMode {
