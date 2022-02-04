@@ -1,50 +1,61 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:x_o_game/models/room.dart';
 
-Future<String> createRoom() async {
+Future<Room> createRoom() async {
   CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
   // Authorization
   if (FirebaseAuth.instance.currentUser?.uid == null) {
-    return Future.error(
-        ErrorDescription("You are not authorized to perform this action!"));
+    throw ErrorDescription("You are not authorized to perform this action!");
   }
+  final owner = FirebaseAuth.instance.currentUser!.uid;
+  final room = Room(owner: owner);
+  final createdRoom = await rooms.add(room.toJson());
+  room.id = createdRoom.id;
 
-  // Call the user's CollectionReference to add a new user
-  final room = await rooms.add({
-    'owner': FirebaseAuth.instance.currentUser!.uid,
-  });
-  return room.id;
+  return room;
 }
 
-Stream<List<String>> fetchRooms() {
+Stream<List<Room>> fetchRooms() {
   CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
-  return rooms
-      .snapshots(includeMetadataChanges: true)
-      .map((snapshot) => snapshot.docs.map((doc) => doc.id).toList());
+  return rooms.snapshots(includeMetadataChanges: true).map(
+        (snapshot) => snapshot.docs
+            .map((doc) => Room.fromJson(doc.data(), doc.id))
+            .toList(),
+      );
 }
 
 void enterRoom(String roomId) async {}
+void leaveRoom(String roomId) async {}
+
+String? authenticate() {
+  // Authentication
+  if (FirebaseAuth.instance.currentUser?.uid == null) {
+    throw ErrorDescription("You are not authorized to perform this action!");
+  }
+  return FirebaseAuth.instance.currentUser?.uid;
+}
+
+Future<bool> isRoomOwner(String roomId) async {
+  final userId = authenticate();
+  if (userId == null) return false;
+
+  // Authorizing
+  final roomRef = FirebaseFirestore.instance.collection("rooms").doc(roomId);
+
+  final roomJSON = (await roomRef.get()).data();
+  if (roomJSON == null) return false;
+  final room = Room.fromJson(roomJSON, roomId);
+  return room.owner == userId;
+}
 
 void terminateRoom(String roomId) async {
-  if (FirebaseAuth.instance.currentUser?.uid == null) {
-    return Future.error(
-        ErrorDescription("You are not authorized to perform this action!"));
+  if (!(await isRoomOwner(roomId))) {
+    throw ErrorDescription("You are not authorized!");
   }
-  print("#### TRYING TO DELETE ROOM $roomId");
-  final room = FirebaseFirestore.instance.collection("rooms").doc(roomId);
-
-  final roomObject = await room.get();
-  final roomMap = roomObject.data();
-  if (roomMap == null) return;
-  if (roomMap["owner"]! == FirebaseAuth.instance.currentUser!.uid) {
-    print(
-        "**** The owner of the room is ${roomMap["owner"]}, and you are ${FirebaseAuth.instance.currentUser!.uid}");
-    // I am the owneer of this room
-    await room.delete();
-  } else {
-    print("You can't delete your partenrs room");
-  }
+  final roomRef = FirebaseFirestore.instance.collection("rooms").doc(roomId);
+  await roomRef.delete();
 }
 
 void play() async {}

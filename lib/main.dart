@@ -1,12 +1,8 @@
 // ignore_for_file: prefer_const_constructors, unused_local_variable
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:x_o_game/pages/home.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:x_o_game/pages/rooms.dart';
 import 'package:x_o_game/pages/signin.dart';
-import 'package:x_o_game/pages/signup.dart';
 import 'firebase_options.dart';
 
 void main() async {

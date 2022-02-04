@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import "package:x_o_game/apis/firebase.game.dart" as game;
+import 'package:x_o_game/models/room.dart';
 import 'package:x_o_game/pages/xo_game.dart';
 
 class Rooms extends StatefulWidget {
@@ -15,26 +16,9 @@ class Rooms extends StatefulWidget {
 
 class _RoomsState extends State<Rooms> {
   List<String> _rooms = [];
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchRooms();
-  // }
-
-  // void fetchRooms() async {
-  //   final fetchedRooms = await game.fetchRooms();
-  //   setState(() {
-  //     _rooms = fetchedRooms;
-  //   });
-  // }
-
   void createRoom() async {
-    final roomId = await game.createRoom();
-    navigateToRoom(roomId);
-    // setState(() {
-    //   _rooms.insert(0, roomId);
-    // });
+    final room = await game.createRoom();
+    navigateToRoom(room);
   }
 
   String getRandString(int len) {
@@ -43,13 +27,13 @@ class _RoomsState extends State<Rooms> {
     return base64UrlEncode(values);
   }
 
-  void navigateToRoom(String roomId) {
+  void navigateToRoom(Room room) {
     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => XO_Game(
             mode: GameMode.networkPlayers,
-            roomId: roomId,
+            room: room,
           ),
         ));
   }
@@ -70,13 +54,13 @@ class _RoomsState extends State<Rooms> {
           else if (snapshot.connectionState == ConnectionState.waiting)
             return Text("Loading");
 
-          var rooms = snapshot.data as List<String>;
+          var rooms = snapshot.data as List<Room>;
           print("#$rooms");
 
           return ListView.builder(
             itemCount: rooms.length,
             itemBuilder: (context, index) => ListTile(
-              title: Text(rooms[index].substring(0, 4)),
+              title: Text((rooms[index].id?.substring(0, 4) ?? "NO ROOM ID")),
               onTap: () => navigateToRoom(rooms[index]),
             ),
           );

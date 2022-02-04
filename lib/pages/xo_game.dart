@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:x_o_game/models/room.dart';
 import 'package:x_o_game/utils/xo_utils.dart';
 import "package:x_o_game/apis/firebase.game.dart" as game;
 
@@ -14,9 +15,9 @@ class GameMode {
 }
 
 class XO_Game extends StatefulWidget {
-  XO_Game({Key? key, required this.mode, this.roomId}) : super(key: key);
+  XO_Game({Key? key, required this.mode, this.room}) : super(key: key);
   String mode;
-  String? roomId;
+  Room? room;
 
   void prepareNetowrkPlayers() {
     // if (mode == GameMode.networkPlayers) {
@@ -205,8 +206,8 @@ class _XO_GameState extends State<XO_Game> {
   @override
   void deactivate() {
     // super.deactivate();
-    print("%%%%% WE'RE inside XO game. Trying to remove ${widget.roomId}");
-    final roomId = widget.roomId;
+    print("%%%%% WE'RE inside XO game. Trying to remove ${widget.room?.id}");
+    final roomId = widget.room?.id;
     if (roomId == null) return;
     game.terminateRoom(roomId);
   }
