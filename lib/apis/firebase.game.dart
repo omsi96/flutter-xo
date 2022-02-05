@@ -127,6 +127,7 @@ Future toggleNetworkPlayer(roomId) async {
   if (roomJSON == null) return;
   final room = Room.fromJson(roomJSON, roomId);
   room.turn++;
+  room.currentPlayer = room.turn % 2 == 0 ? "X" : "O";
 
   await updateRoom(room);
 }

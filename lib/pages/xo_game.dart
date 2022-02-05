@@ -253,6 +253,8 @@ class _XO_GameState extends State<XO_Game> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text(
+                      "Network Symbol: ${widget.networkSymbol}, Current Player: ${_currentPlayer}"),
                   NetworkPlayersContainer(room),
                   Text(
                     gameLabel,

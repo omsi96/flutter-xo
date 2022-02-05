@@ -11,7 +11,7 @@ class Room {
   bool gameOver = false;
   int ownerWins = 0;
   int opponentWins = 0;
-  String currentPlayer = "";
+  String currentPlayer = "X";
   String? id;
   List<String> grid = ["", "", "", "", "", "", "", "", ""];
   // 1st constructor
