@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:x_o_game/models/room.dart';
 import 'package:x_o_game/pages/signin.dart';
+import 'package:x_o_game/pages/xo_game.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -27,6 +29,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: SignIn(),
+      // TODO: UNUCOMMENT ME WHEN YOU ARRE DONE TESTING
+      // home: XO_Game(
+      //   mode: GameMode.networkPlayers,
+      //   room: Room(owner: "Omar Alibrahim"),
+      // ),
     );
   }
 }

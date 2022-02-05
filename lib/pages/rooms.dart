@@ -17,8 +17,8 @@ class Rooms extends StatefulWidget {
 class _RoomsState extends State<Rooms> {
   List<String> _rooms = [];
   void createRoom() async {
-    final room = await game.createRoom();
-    navigateToRoom(room);
+    final roomStream = await game.createRoom();
+    navigateToRoom(roomStream);
   }
 
   String getRandString(int len) {
@@ -27,14 +27,26 @@ class _RoomsState extends State<Rooms> {
     return base64UrlEncode(values);
   }
 
-  void navigateToRoom(Room room) {
+  void navigateToRoom(game.RoomStream roomStream) {
     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => XO_Game(
-            mode: GameMode.networkPlayers,
-            room: room,
-          ),
+              mode: GameMode.networkPlayers,
+              roomStream: roomStream.roomStream,
+              roomId: roomStream.roomId),
+        ));
+  }
+
+  void enterRoom(String roomId) async {
+    final roomStream = await game.enterRoom(roomId);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => XO_Game(
+              mode: GameMode.networkPlayers,
+              roomStream: roomStream,
+              roomId: roomId),
         ));
   }
 
@@ -50,7 +62,7 @@ class _RoomsState extends State<Rooms> {
         stream: game.fetchRooms(),
         builder: (context, snapshot) {
           if (snapshot.hasError)
-            return Text("ERROR");
+            return Text("ERROR ${snapshot.error.toString()}");
           else if (snapshot.connectionState == ConnectionState.waiting)
             return Text("Loading");
 
@@ -61,7 +73,7 @@ class _RoomsState extends State<Rooms> {
             itemCount: rooms.length,
             itemBuilder: (context, index) => ListTile(
               title: Text((rooms[index].id?.substring(0, 4) ?? "NO ROOM ID")),
-              onTap: () => navigateToRoom(rooms[index]),
+              onTap: () => enterRoom(rooms[index].id!),
             ),
           );
         },

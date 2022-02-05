@@ -15,7 +15,8 @@ Room _$RoomFromJson(Map<String, dynamic> json) => Room(
       ..gameOver = json['gameOver'] as bool
       ..ownerWins = json['ownerWins'] as int
       ..opponentWins = json['opponentWins'] as int
-      ..id = json['id'] as String?;
+      ..id = json['id'] as String?
+      ..grid = (json['grid'] as List<dynamic>).map((e) => e as String).toList();
 
 Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{
       'owner': instance.owner,
@@ -26,4 +27,5 @@ Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{
       'ownerWins': instance.ownerWins,
       'opponentWins': instance.opponentWins,
       'id': instance.id,
+      'grid': instance.grid,
     };
