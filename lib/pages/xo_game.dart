@@ -52,8 +52,20 @@ class _XO_GameState extends State<XO_Game> {
   ];
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
+    initiateSymbol();
+
+    widget.roomStream?.listen((room) {
+      print("listening to the grid");
+      setState(() {
+        _grid = XO_Utils.unFlatten2DGrid(room.grid);
+        _currentPlayer = room.currentPlayer;
+      });
+    });
+  }
+
+  void initiateSymbol() async {
     if (widget.mode == GameMode.networkPlayers &&
         widget.roomId != null &&
         widget.roomStream != null) {
@@ -65,14 +77,6 @@ class _XO_GameState extends State<XO_Game> {
         widget.networkSymbol = "O";
       }
     }
-
-    widget.roomStream?.listen((room) {
-      print("listening to the grid");
-      setState(() {
-        _grid = XO_Utils.unFlatten2DGrid(room.grid);
-        _currentPlayer = room.currentPlayer;
-      });
-    });
   }
 
   var buttonStyle = GoogleFonts.quicksand(
