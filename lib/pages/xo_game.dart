@@ -21,7 +21,7 @@ class XO_Game extends StatefulWidget {
   String mode;
   Stream<Room>? roomStream;
   String? roomId;
-
+  String? networkSymbol;
   void prepareNetowrkPlayers() {
     // if (mode == GameMode.networkPlayers) {
     //   if (roomId != null) {
@@ -43,12 +43,37 @@ class _XO_GameState extends State<XO_Game> {
   bool gameOver = false;
   final _computerDelay = 700;
   String _currentPlayer = "X";
+
   // ignore: prefer_final_fields
   var _grid = [
     ["", "", ""],
     ["", "", ""],
     ["", "", ""],
   ];
+
+  @override
+  void initState() async {
+    super.initState();
+    if (widget.mode == GameMode.networkPlayers &&
+        widget.roomId != null &&
+        widget.roomStream != null) {
+      if (await game.isRoomOwner(widget.roomId!)) {
+        setState(() {
+          widget.networkSymbol = "X";
+        });
+      } else {
+        widget.networkSymbol = "O";
+      }
+    }
+
+    widget.roomStream?.listen((room) {
+      print("listening to the grid");
+      setState(() {
+        _grid = XO_Utils.unFlatten2DGrid(room.grid);
+        _currentPlayer = room.currentPlayer;
+      });
+    });
+  }
 
   var buttonStyle = GoogleFonts.quicksand(
     textStyle: TextStyle(
@@ -74,8 +99,22 @@ class _XO_GameState extends State<XO_Game> {
   }
 
   void networkGame(int r, int c) {
-    userTurn(r, c);
-    game.play(grid: XO_Utils.flatten2DArray(_grid), roomId: widget.roomId!);
+    if (_grid[r][c] != "") {
+      showNotAllowedAreaAlert();
+      return;
+    }
+    setState(() {
+      if (networkGameAllowedToPlay()) {
+        _grid[r][c] = _currentPlayer;
+        displayMessage(_currentPlayer);
+        game.toggleNetworkPlayer(widget.roomId!);
+        game.play(grid: XO_Utils.flatten2DArray(_grid), roomId: widget.roomId!);
+      }
+    });
+  }
+
+  bool networkGameAllowedToPlay() {
+    return widget.networkSymbol == _currentPlayer;
   }
 
   void computerTurn() {
@@ -95,20 +134,17 @@ class _XO_GameState extends State<XO_Game> {
     }
   }
 
-  void networkPlayerTurn() {
-    if (widget.mode == GameMode.networkPlayers) {
-      if (randomEmptySpot().isNotEmpty) {
-        final randomSpot = randomEmptySpot();
-        int r = randomSpot[0];
-        int c = randomSpot[1];
-        setState(() {
-          _grid[r][c] = "O";
-          displayMessage(_currentPlayer);
-          togglePlayer();
-        });
-      }
-    }
-  }
+  // void networkPlayerTurn() {
+  //   if (widget.mode == GameMode.networkPlayers) {
+
+  //       setState(() {
+  //         _grid[r][c] = "O";
+  //         displayMessage(_currentPlayer);
+  //         togglePlayer();
+  //       });
+
+  //   }
+  // }
 
   void togglePlayer() {
     setState(() {

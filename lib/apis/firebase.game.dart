@@ -118,3 +118,15 @@ Stream<Map<String, dynamic>> listenRoom(String roomId) {
       .snapshots(includeMetadataChanges: true)
       .map((snapshot) => snapshot.data()!["grid"]!);
 }
+
+Future toggleNetworkPlayer(roomId) async {
+  final userId = authenticate();
+  if (userId == null) return;
+  final roomRef = FirebaseFirestore.instance.collection("rooms").doc(roomId);
+  final roomJSON = (await roomRef.get()).data();
+  if (roomJSON == null) return;
+  final room = Room.fromJson(roomJSON, roomId);
+  room.turn++;
+
+  await updateRoom(room);
+}
